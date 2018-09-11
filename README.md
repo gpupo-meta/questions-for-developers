@@ -1,5 +1,10 @@
 # Questions for Developers
 
+## Requirements
+
+- PHP >= *7.2*
+- [Composer Dependency Manager](http://getcomposer.org)
+
 ## Install
 
     composer install

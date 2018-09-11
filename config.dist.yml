@@ -1,4 +1,5 @@
 paths:
     - data
     - "vendor/certificationy/php-pack/data"
+    # If You want, add SF2 questions (outdated):
     #- "vendor/certificationy/symfony-pack/data"
