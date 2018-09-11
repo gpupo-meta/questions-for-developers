@@ -1,0 +1,37 @@
+{
+    "name": "gpupo/questions-for-developers",
+    "type": "library",
+    "description": "Training questions for developers",
+    "keywords": [
+        "symfony",
+        "cli",
+        "test",
+        "exam"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gilmar Pupo",
+            "email": "contact@gpupo.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "symfony/console": "~3.2",
+        "certificationy/certificationy-cli": "v2.0-alpha"
+    },
+
+    "require-dev": {
+    "phpunit/phpunit": "^7.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Gpupo\\QuestionsForDevelopers\\": "src"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

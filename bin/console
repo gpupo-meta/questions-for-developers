@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+$up = DIRECTORY_SEPARATOR . '..';
+$file = DIRECTORY_SEPARATOR . 'autoload.php';
+$candiates = array(
+    __DIR__ . $up . $file,
+    __DIR__ . $up . DIRECTORY_SEPARATOR . 'vendor' . $file,
+    __DIR__ . $up . $up . $up . $file,
+);
+
+foreach ($candiates as $path) {
+    $autoload = @include_once $path;
+    if ($autoload) {
+        break;
+    }
+}
+
+if (!$autoload) {
+    throw new RuntimeException('Install dependencies to run the console.');
+}
+
+$cli = new \Symfony\Component\Console\Application("Questions for Developers");
+$cli->addCommands(array(
+    new \Gpupo\QuestionsForDevelopers\QuestionsCommand(),
+));
+$cli->run();
