@@ -1,0 +1,10 @@
+category: Composer
+questions:
+    -
+        question: 'Which of the following is not valid syntax for composer.json file node?'
+        answers:
+            - {value: '"autoload": {},', correct: false}
+            - {value: '"autoload-dev": {},', correct: false}
+            - {value: '"start": {},', correct: true}
+            - {value: '"require": {},', correct: false}
+            - {value: '"require-dev": {},', correct: false}

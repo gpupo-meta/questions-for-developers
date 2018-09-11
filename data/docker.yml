@@ -1,0 +1,10 @@
+category: Docker
+questions:
+    -
+        question: 'Which of the following is not valid syntax for docker-compose.yml file node?'
+        answers:
+            - {value: 'links:', correct: false}
+            - {value: 'devices:', correct: true}
+            - {value: 'services:', correct: false}
+            - {value: 'image:', correct: false}
+            - {value: 'volume:', correct: false}
