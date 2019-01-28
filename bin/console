@@ -1,27 +1,19 @@
 #!/usr/bin/env php
 <?php
 
-$up = DIRECTORY_SEPARATOR . '..';
-$file = DIRECTORY_SEPARATOR . 'autoload.php';
-$candiates = array(
-    __DIR__ . $up . $file,
-    __DIR__ . $up . DIRECTORY_SEPARATOR . 'vendor' . $file,
-    __DIR__ . $up . $up . $up . $file,
-);
+/*
+ * This file is part of gpupo/questions-for-developers
+ * Created by Gilmar Pupo <contact@gpupo.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ * For more information, see <https://opensource.gpupo.com/>.
+ */
 
-foreach ($candiates as $path) {
-    $autoload = @include_once $path;
-    if ($autoload) {
-        break;
-    }
-}
+namespace Gpupo\QuestionsForDevelopers\Console;
 
-if (!$autoload) {
-    throw new RuntimeException('Install dependencies to run the console.');
-}
+require './config/bootstrap.php';
 
-$cli = new \Symfony\Component\Console\Application("Questions for Developers");
-$cli->addCommands(array(
-    new \Gpupo\QuestionsForDevelopers\QuestionsCommand(),
-));
-$cli->run();
+use Gpupo\QuestionsForDevelopers\Console\Application;
+
+$app = new Application("questions-for-developers");
+$app->init(__NAMESPACE__, dirname(__DIR__));

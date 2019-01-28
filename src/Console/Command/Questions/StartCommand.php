@@ -15,25 +15,21 @@ declare(strict_types=1);
  *
  */
 
-namespace Gpupo\QuestionsForDevelopers;
+namespace Gpupo\QuestionsForDevelopers\Console\Command\Questions;
 
 use Certificationy\Collections\Questions;
 use Certificationy\Loaders\YamlLoader as Loader;
 use Certificationy\Set;
-use Symfony\Component\Console\Command\Command;
+use Gpupo\QuestionsForDevelopers\Console\Command\AbstractCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Yaml\Yaml;
 
-class QuestionsCommand extends Command
+final class StartCommand extends AbstractCommand
 {
-    /**
-     * @var int
-     */
     const WORDWRAP_NUMBER = 80;
 
     /**
@@ -49,8 +45,7 @@ class QuestionsCommand extends Command
             ->addOption('list', 'l', InputOption::VALUE_NONE, 'List categories')
             ->addOption('training', null, InputOption::VALUE_NONE, 'Training mode: the solution is displayed after each question')
             ->addOption('hide-multiple-choice', null, InputOption::VALUE_NONE, 'Should we hide the information that the question is multiple choice?')
-            ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Use custom config', null)
-        ;
+            ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Use custom config', null);
     }
 
     /**
@@ -58,10 +53,7 @@ class QuestionsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->path($input->getOption('config'));
-        $paths = Yaml::parse(file_get_contents($config));
-
-        $yamlLoader = new Loader($paths);
+        $yamlLoader = new Loader($data['paths']);
         if ($input->getOption('list')) {
             $output->writeln($yamlLoader->categories());
 
@@ -75,8 +67,8 @@ class QuestionsCommand extends Command
 
         if ($set->getQuestions()) {
             $output->writeln(
-                sprintf('Starting a new set of <info>%s</info> questions (available questions: <info>%s</info>)', \count($set->getQuestions()), \count($yamlLoader->all()))
-            );
+                    sprintf('Starting a new set of <info>%s</info> questions (available questions: <info>%s</info>)', \count($set->getQuestions()), \count($yamlLoader->all()))
+                );
 
             $this->askQuestions($set, $input, $output);
             $this->displayResults($set, $output);
@@ -85,13 +77,6 @@ class QuestionsCommand extends Command
         }
     }
 
-    /**
-     * Ask questions.
-     *
-     * @param Set             $set    A Certificationy questions Set instance
-     * @param InputInterface  $input  A Symfony Console input instance
-     * @param OutputInterface $output A Symfony Console output instance
-     */
     protected function askQuestions(Set $set, InputInterface $input, OutputInterface $output)
     {
         $questionHelper = $this->getHelper('question');
@@ -100,15 +85,15 @@ class QuestionsCommand extends Command
 
         foreach ($set->getQuestions()->all() as $i => $question) {
             $choiceQuestion = new ChoiceQuestion(
-                sprintf(
-                    'Question <comment>#%d</comment> [<info>%s</info>] %s %s'."\n",
-                    $questionCount++,
-                    $question->getCategory(),
-                    $question->getQuestion(),
-                    (true === $hideMultipleChoice ? '' : "\n".'This question <comment>'.(true === $question->isMultipleChoice() ? 'IS' : 'IS NOT').'</comment> multiple choice.')
-                ),
-                $question->getAnswersLabels()
-            );
+                    sprintf(
+                        'Question <comment>#%d</comment> [<info>%s</info>] %s %s'."\n",
+                        $questionCount++,
+                        $question->getCategory(),
+                        $question->getQuestion(),
+                        (true === $hideMultipleChoice ? '' : "\n".'This question <comment>'.(true === $question->isMultipleChoice() ? 'IS' : 'IS NOT').'</comment> multiple choice.')
+                    ),
+                    $question->getAnswersLabels()
+                );
 
             $multiSelect = true === $hideMultipleChoice ? true : $question->isMultipleChoice();
             $numericOnly = 1 === array_product(array_map('is_numeric', $question->getAnswersLabels()));
@@ -136,12 +121,6 @@ class QuestionsCommand extends Command
         }
     }
 
-    /**
-     * Returns results.
-     *
-     * @param Set             $set    A Certificationy questions Set instance
-     * @param OutputInterface $output A Symfony Console output instance
-     */
     protected function displayResults(Set $set, OutputInterface $output)
     {
         $results = [];
@@ -155,11 +134,11 @@ class QuestionsCommand extends Command
             $help = $question->getHelp();
 
             $results[] = [
-                sprintf('<comment>#%d</comment> %s', $questionCount, $label),
-                wordwrap(implode(', ', $question->getCorrectAnswersValues()), self::WORDWRAP_NUMBER, "\n"),
-                $isCorrect ? '<info>✔</info>' : '<error>✗</error>',
-                (null !== $help) ? wordwrap($help, self::WORDWRAP_NUMBER, "\n") : '',
-            ];
+                    sprintf('<comment>#%d</comment> %s', $questionCount, $label),
+                    wordwrap(implode(', ', $question->getCorrectAnswersValues()), self::WORDWRAP_NUMBER, "\n"),
+                    $isCorrect ? '<info>✔</info>' : '<error>✗</error>',
+                    (null !== $help) ? wordwrap($help, self::WORDWRAP_NUMBER, "\n") : '',
+                ];
         }
 
         if ($results) {
@@ -167,33 +146,13 @@ class QuestionsCommand extends Command
             $tableHelper
                 ->setHeaders(['Question', 'Correct answer', 'Result', 'Help'])
                 ->setRows($results)
-            ;
+                ;
 
             $tableHelper->render();
 
             $output->writeln(
-                sprintf('<comment>Results</comment>: <error>errors: %s</error> - <info>correct: %s</info>', $set->getWrongAnswers()->count(), $set->getCorrectAnswers()->count())
-            );
+                    sprintf('<comment>Results</comment>: <error>errors: %s</error> - <info>correct: %s</info>', $set->getWrongAnswers()->count(), $set->getCorrectAnswers()->count())
+                );
         }
-    }
-
-    /**
-     * Returns configuration file path.
-     *
-     * @param null|string $config
-     *
-     * @return string $path      The configuration filepath
-     */
-    protected function path(string $config = null): string
-    {
-        $string = \dirname(__DIR__).'/config%s.yml';
-
-        $defaultConfig = sprintf($string, '.dist');
-
-        if (file_exists(sprintf($string, ''))) {
-            $defaultConfig = sprintf($string, '');
-        }
-
-        return $config ?? $defaultConfig;
     }
 }

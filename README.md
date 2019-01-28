@@ -2,16 +2,18 @@
 
 ## Requirements
 
-- PHP >= *7.2*
+- PHP >= *7.3*
 - [Composer Dependency Manager](http://getcomposer.org)
 
 ## Install
 
     composer install
 
-Add custom config (optional)
+### Add custom config (optional)
 
-    cp config.dist.yml config.yml
+    cp parameters.dist.yaml parameters.yaml
+
+and modify ``extra_file`` in ``.env`` file
 
 ## Run
 

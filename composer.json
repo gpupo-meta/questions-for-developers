@@ -23,8 +23,9 @@
         }
     ],
     "require": {
-        "php": ">=7.2",
-        "gpupo/common": "^4.0",
+        "php": ">=7.3",
+        "gpupo/common": "dev-master",
+        "gpupo/common-sdk": "dev-master",
         "certificationy/certificationy-cli": "v2.1.x-dev",
         "certificationy/php-pack": "dev-master"
 
