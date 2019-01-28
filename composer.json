@@ -15,14 +15,22 @@
             "email": "contact@gpupo.com"
         }
     ],
+    "repositories":
+    [
+        {
+            "type": "vcs",
+            "url": "http://github.com/P3PO/certificationy-cli"
+        }
+    ],
     "require": {
         "php": ">=7.2",
-        "symfony/console": "~3.2",
-        "certificationy/certificationy-cli": "v2.0-alpha"
-    },
+        "gpupo/common": "^4.0",
+        "certificationy/certificationy-cli": "v2.1.x-dev",
+        "certificationy/php-pack": "dev-master"
 
+    },
     "require-dev": {
-    "phpunit/phpunit": "^7.3"
+      "phpunit/phpunit": "^7.3"
     },
     "autoload": {
         "psr-4": {

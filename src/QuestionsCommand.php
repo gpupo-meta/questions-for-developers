@@ -1,9 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * This file is part of gpupo/questions-for-developers
+ * Created by Gilmar Pupo <contact@gpupo.com>
+ * For the information of copyright and license you should read the file
+ * LICENSE which is distributed with this source code.
+ * Para a informação dos direitos autorais e de licença você deve ler o arquivo
+ * LICENSE que é distribuído com este código-fonte.
+ * Para obtener la información de los derechos de autor y la licencia debe leer
+ * el archivo LICENSE que se distribuye con el código fuente.
+ * For more information, see <https://opensource.gpupo.com/>.
+ *
+ */
+
 namespace Gpupo\QuestionsForDevelopers;
 
-use Certificationy\Loaders\YamlLoader as Loader;
 use Certificationy\Collections\Questions;
+use Certificationy\Loaders\YamlLoader as Loader;
 use Certificationy\Set;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -17,7 +32,7 @@ use Symfony\Component\Yaml\Yaml;
 class QuestionsCommand extends Command
 {
     /**
-     * @var integer
+     * @var int
      */
     const WORDWRAP_NUMBER = 80;
 
@@ -32,7 +47,7 @@ class QuestionsCommand extends Command
             ->addArgument('categories', InputArgument::IS_ARRAY, 'Which categories do you want (separate multiple with a space)', [])
             ->addOption('number', null, InputOption::VALUE_OPTIONAL, 'How many questions do you want?', 20)
             ->addOption('list', 'l', InputOption::VALUE_NONE, 'List categories')
-            ->addOption("training", null, InputOption::VALUE_NONE, "Training mode: the solution is displayed after each question")
+            ->addOption('training', null, InputOption::VALUE_NONE, 'Training mode: the solution is displayed after each question')
             ->addOption('hide-multiple-choice', null, InputOption::VALUE_NONE, 'Should we hide the information that the question is multiple choice?')
             ->addOption('config', 'c', InputOption::VALUE_OPTIONAL, 'Use custom config', null)
         ;
@@ -50,17 +65,17 @@ class QuestionsCommand extends Command
         if ($input->getOption('list')) {
             $output->writeln($yamlLoader->categories());
 
-            return ;
+            return;
         }
 
         $categories = $input->getArgument('categories');
-        $number     = $input->getOption('number');
+        $number = $input->getOption('number');
 
         $set = Set::create($yamlLoader->load($number, $categories));
 
         if ($set->getQuestions()) {
             $output->writeln(
-                sprintf('Starting a new set of <info>%s</info> questions (available questions: <info>%s</info>)', count($set->getQuestions()), count($yamlLoader->all()))
+                sprintf('Starting a new set of <info>%s</info> questions (available questions: <info>%s</info>)', \count($set->getQuestions()), \count($yamlLoader->all()))
             );
 
             $this->askQuestions($set, $input, $output);
@@ -71,7 +86,7 @@ class QuestionsCommand extends Command
     }
 
     /**
-     * Ask questions
+     * Ask questions.
      *
      * @param Set             $set    A Certificationy questions Set instance
      * @param InputInterface  $input  A Symfony Console input instance
@@ -90,7 +105,7 @@ class QuestionsCommand extends Command
                     $questionCount++,
                     $question->getCategory(),
                     $question->getQuestion(),
-                    ($hideMultipleChoice === true ? "" : "\n".'This question <comment>'.($question->isMultipleChoice() === true ? 'IS' : 'IS NOT')."</comment> multiple choice.")
+                    (true === $hideMultipleChoice ? '' : "\n".'This question <comment>'.(true === $question->isMultipleChoice() ? 'IS' : 'IS NOT').'</comment> multiple choice.')
                 ),
                 $question->getAnswersLabels()
             );
@@ -103,12 +118,12 @@ class QuestionsCommand extends Command
 
             $answer = $questionHelper->ask($input, $output, $choiceQuestion);
 
-            $answers = true === $multiSelect ? $answer : array($answer);
-            $answer  = true === $multiSelect ? implode(', ', $answer) : $answer;
+            $answers = true === $multiSelect ? $answer : [$answer];
+            $answer = true === $multiSelect ? implode(', ', $answer) : $answer;
 
             $set->setUserAnswers($i, $answers);
 
-            if ($input->getOption("training")) {
+            if ($input->getOption('training')) {
                 $uniqueSet = Set::create(new Questions([$i => $question]));
 
                 $uniqueSet->setUserAnswers($i, $answers);
@@ -122,7 +137,7 @@ class QuestionsCommand extends Command
     }
 
     /**
-     * Returns results
+     * Returns results.
      *
      * @param Set             $set    A Certificationy questions Set instance
      * @param OutputInterface $output A Symfony Console output instance
@@ -135,7 +150,7 @@ class QuestionsCommand extends Command
 
         foreach ($set->getQuestions()->all() as $key => $question) {
             $isCorrect = $set->isCorrect($key);
-            $questionCount++;
+            ++$questionCount;
             $label = wordwrap($question->getQuestion(), self::WORDWRAP_NUMBER, "\n");
             $help = $question->getHelp();
 
@@ -150,7 +165,7 @@ class QuestionsCommand extends Command
         if ($results) {
             $tableHelper = new Table($output);
             $tableHelper
-                ->setHeaders(array('Question', 'Correct answer', 'Result', 'Help'))
+                ->setHeaders(['Question', 'Correct answer', 'Result', 'Help'])
                 ->setRows($results)
             ;
 
@@ -163,15 +178,15 @@ class QuestionsCommand extends Command
     }
 
     /**
-     * Returns configuration file path
+     * Returns configuration file path.
      *
      * @param null|string $config
      *
-     * @return String $path      The configuration filepath
+     * @return string $path      The configuration filepath
      */
-    protected function path(string $config = null) : string
+    protected function path(string $config = null): string
     {
-        $string =  dirname(__DIR__).'/config%s.yml';
+        $string = \dirname(__DIR__).'/config%s.yml';
 
         $defaultConfig = sprintf($string, '.dist');
 

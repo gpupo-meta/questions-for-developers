@@ -2,3 +2,5 @@
 /vendor
 *.lock
 config.yml
+*.cache
+/.env.local
